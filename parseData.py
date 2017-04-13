@@ -1,8 +1,9 @@
 """this moudle read csv file"""
 import csv
 
+
 class ParseData(object):
-    """parse time and hz data"""
+
     __row_data = ''
 
     def __init__(self, file_name):
@@ -12,7 +13,7 @@ class ParseData(object):
     def __get_row_data(self):
         return csv.reader(self.__file)
 
-    def _slice_data(self, start_flag, end_flag):
+    def __slice_data(self, start_flag, end_flag):
         flag = False
         result = {
             'x': [],
@@ -23,8 +24,9 @@ class ParseData(object):
                 flag = False
 
             if flag:
-                result['x'].append(row[0])
-                result['y'].append(row[1])
+                if row[0] != 'OA':
+                    result['x'].append(row[0])
+                    result['y'].append(row[1])
 
             if row == start_flag:
                 flag = True
@@ -33,8 +35,8 @@ class ParseData(object):
 
     def get_time_zone_data(self):
         """get time zone data"""
-        return self._slice_data(['TIME(s)', 'TIMEa(EU)'], [])
+        return self.__slice_data(['TIME(s)', 'TIMEa(EU)'], [])
 
     def get_hz_zone_data(self):
         """get hz zone data"""
-        return self._slice_data(['OA', '2.26E-04'], ['OAW', '-'])
+        return self.__slice_data(['FREQ(Hz)', 'SPECa(EU)'], ['OAW', '-'])
