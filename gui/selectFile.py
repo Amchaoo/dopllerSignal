@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import wx
+from gui.test import LoginFrame
 
 
 class SelectFile(wx.Frame):
     def __init__(self, parent, title):
+        self.filePath = ''
+
         wx.Frame.__init__(self, parent, title=title)
+        self.Center()
 
         self.__initPanel()
         self.__initBox()
@@ -39,12 +43,20 @@ class SelectFile(wx.Frame):
 
     def selectFile(self, e):
         dig = wx.FileDialog(
-            self, message="open file", style=wx.FD_PREVIEW, wildcard="*.csv")
+            self, message=u"请选择外差数据文件", style=wx.FD_PREVIEW, wildcard="*.csv")
         if dig.ShowModal() == wx.ID_OK:
-            return dig.GetPath().encode('utf-8')
+            self.filePath = dig.GetPath().encode('utf-8')
+            self.Close()
+            LoginFrame(None, -1, title="LoginFrame", size=(500, 250))
+        else:
+            self.filePath = ''
 
 
-if __name__ == '__main__':
-    app = wx.App()
-    frame = SelectFile(None, u'外差多普勒型号处理')
-    app.MainLoop()
+def selectFileIns():
+    return SelectFile(None, u'外差多普勒信号处理')
+
+
+# if __name__ == '__main__':
+#     app = wx.App()
+#     frame = SelectFile(None, u'外差多普勒信号处理')
+#     app.MainLoop()
