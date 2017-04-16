@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import wx
+from gui.selectFile import SelectFile
 
 
 class GaugePanel(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, pipe=None):
         wx.Panel.__init__(self, parent, wx.ID_ANY, size=(500, 250))
+        self.parent = parent
         self.SetBackgroundColour("white")
         self.count = 0
         self.gauge = wx.Gauge(
@@ -18,3 +20,9 @@ class GaugePanel(wx.Panel):
     def OnIdle(self, event):
         self.count = self.count + 1
         self.gauge.SetValue(self.count)
+
+        if self.count == 100:
+            self.parent.panel = SelectFile(self.parent)
+            self.Close()
+
+
