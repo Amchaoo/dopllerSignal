@@ -3,8 +3,10 @@ from parseData import ParseData
 import matplotlib.pyplot as plt
 import numpy as np
 
-if __name__ == '__main__':
-    INS = ParseData('./../data/ADRS0019.CSV')
+
+def paint(filePath):
+    print filePath
+    INS = ParseData(filePath)
     TIME_ZONE_DATA = INS.get_time_zone_data()
     HZ_ZONE_DATA = INS.get_hz_zone_data()
 

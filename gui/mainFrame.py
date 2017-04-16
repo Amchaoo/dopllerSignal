@@ -3,6 +3,7 @@
 import wx
 from gui.intro import Intro
 from gui.gauge import GaugePanel
+from utils.paint import paint
 
 
 class MainFrame(wx.Frame):
@@ -32,15 +33,17 @@ class MainFrame(wx.Frame):
             self, message=u"请选择外差数据文件",
             style=wx.FD_PREVIEW, wildcard="*.csv")
         if dig.ShowModal() == wx.ID_OK:
-            self.filePath = dig.GetPath().encode('utf-8')
-            self.showGauge()
+            self.filePath = dig.GetPath()
+            # self
+            # .showGauge()
+            paint(self.filePath)
+            # print self.filePath
         else:
             self.filePath = ''
 
     def close(self, e):
         dlg = wx.MessageDialog(
-            self, u'确认退出',
-            '退出挺行', wx.YES_NO | wx.ICON_EXCLAMATION)
+            self, u'确认退出', u'退出提醒', wx.YES_NO | wx.ICON_EXCLAMATION)
 
         if dlg.ShowModal() == wx.ID_YES:
             self.Close()
