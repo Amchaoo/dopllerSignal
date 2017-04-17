@@ -1,36 +1,63 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+from numpy import arange, sin, pi
+
+import matplotlib
+
+# uncomment the following to use wx rather than wxagg
+#matplotlib.use('WX')
+#from matplotlib.backends.backend_wx import FigureCanvasWx as FigureCanvas
+
+# comment out the following to use wx rather than wxagg
+matplotlib.use('WXAgg')
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+
+from matplotlib.backends.backend_wx import NavigationToolbar2Wx
+
+from matplotlib.figure import Figure
+
 import wx
- 
-class ExampleFrame(wx.Frame):
-    def __init__(self,parent=None,id=-1,title='MyFrame'):
-        wx.Frame.__init__(self,parent=parent,id=id,title=title)
-        self.Centre()
-        box1 = vBoxSizer = wx.BoxSizer(wx.HORIZONTAL)
- 
-        btn1 = wx.Button(self, -1, u'你好', style=wx.ALIGN_CENTER)
-        btn2 = wx.Button(self,label='btn2', style=wx.ALIGN_RIGHT)
-        btn3 = wx.Button(self,label='btn3')
-        btn4 = wx.Button(self,label='btn4')
-        btn5 = wx.Button(self,label='btn5')
- 
-        #BoxSizer布局
-        vBoxSizer = wx.BoxSizer(wx.VERTICAL)
-        box1.Add(btn1, proportion=10,border=5, flag=wx.ALIGN_CENTER|wx.EXPAND)
-        vBoxSizer.Add(box1, 10, flag=wx.ALIGN_CENTER)
-        vBoxSizer.Add(btn2, proportion=2,flag=wx.TOP|wx.BOTTOM|wx.EXPAND,border=10)
-        vBoxSizer.Add(btn3, proportion=3,flag=wx.LEFT|wx.RIGHT|wx.EXPAND,border=10)
-        vBoxSizer.Add(btn4, proportion=2,flag=wx.ALL|wx.EXPAND,border=10)
-        vBoxSizer.Add(btn5, proportion=1,flag=wx.TOP|wx.BOTTOM|wx.EXPAND,border=5)
-        #vBoxSizer.AddMany([(btn3,proportion=2,flag=wx.LEFT|wx.RIGHT|wx.EXPAND,border=10),(btn4)])
-        self.SetSizer(vBoxSizer)
- 
-class ExampleApp(wx.App):
+import wx.lib.mixins.inspection as WIT
+
+
+class CanvasFrame(wx.Frame):
+    def __init__(self):
+        wx.Frame.__init__(self, None, -1,
+                          'CanvasFrame', size=(550, 350))
+
+        self.figure = Figure()
+        self.axes = self.figure.add_subplot(111)
+        t = arange(0.0, 3.0, 0.01)
+        s = sin(2 * pi * t)
+
+        self.axes.plot(t, s)
+        self.canvas = FigureCanvas(self, -1, self.figure)
+
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.EXPAND)
+        self.SetSizer(self.sizer)
+        self.Fit()
+
+        self.add_toolbar()  # comment this out for no toolbar
+
+    def add_toolbar(self):
+        self.toolbar = NavigationToolbar2Wx(self.canvas)
+        self.toolbar.Realize()
+        # By adding toolbar in sizer, we are able to put it at the bottom
+        # of the frame - so appearance is closer to GTK version.
+        self.sizer.Add(self.toolbar, 0, wx.LEFT | wx.EXPAND)
+        # update the axes menu on the toolbar
+        self.toolbar.update()
+
+
+# alternatively you could use
+class App(wx.App):
+# class App(WIT.InspectableApp):
     def OnInit(self):
-        frame = ExampleFrame()
-        frame.Show()
+        'Create the main window and insert the custom frame'
+        # self.Init()
+        frame = CanvasFrame()
+        frame.Show(True)
+
         return True
- 
-if __name__  == "__main__":
-    app = ExampleApp()
-    app.MainLoop()
+
+app = App(0)
+app.MainLoop()

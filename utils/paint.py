@@ -1,23 +1,19 @@
 """parse data"""
 from parseData import ParseData
-import matplotlib.pyplot as plt
 import numpy as np
+import scipy as sp
 
 
-def paint(filePath):
-    print filePath
-    INS = ParseData(filePath)
-    TIME_ZONE_DATA = INS.get_time_zone_data()
-    HZ_ZONE_DATA = INS.get_hz_zone_data()
+class PaintData(object):
+    def __init__(self, filePath):
+        data = ParseData(filePath)
+        self.__timeZoneData = data.get_time_zone_data()
 
-    res = np.fft.fft(np.array(TIME_ZONE_DATA['y']))
+    def getTdata(self):
+        return self.__timeZoneData
 
-    print res
-    print len(TIME_ZONE_DATA['y'])
-    plt.subplot(211)
-    plt.plot(TIME_ZONE_DATA['x'], res)
-
-    plt.subplot(212)
-    plt.plot(HZ_ZONE_DATA['x'], HZ_ZONE_DATA['y'])
-
-    plt.show()
+    def getHdata(self):
+        hData = {}
+        hData['x'] = self.__timeZoneData['x']
+        hData['y'] = sp.fft(np.array(self.__timeZoneData['y']))
+        return hData

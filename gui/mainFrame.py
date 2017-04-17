@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 import wx
 from gui.intro import Intro
-from gui.gauge import GaugePanel
-from utils.paint import paint
+from gui.paintPanel import CanvasPanel
 
 
 class MainFrame(wx.Frame):
@@ -12,7 +11,6 @@ class MainFrame(wx.Frame):
         self.Center()
         self.__initMenu()
         self.panel = Intro(self)
-
         self.Show(True)
 
     def __initMenu(self):
@@ -36,8 +34,16 @@ class MainFrame(wx.Frame):
             self.filePath = dig.GetPath()
             # self
             # .showGauge()
-            paint(self.filePath)
+            # paint(self.filePath)
             # print self.filePath
+            self.panel.Destroy()
+            self.Update()
+            self.panel = CanvasPanel(self, self.filePath)
+            self.Maximize(False)
+            self.Maximize(True)
+            self.Update()
+            self.Layout()
+            # self.SetAutoLayout(True)
         else:
             self.filePath = ''
 
