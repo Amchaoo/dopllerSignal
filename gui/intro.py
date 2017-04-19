@@ -23,7 +23,7 @@ class Intro(wx.Panel):
         self.font3 = wx.Font(18, wx.FONTFAMILY_SCRIPT, wx.NORMAL, wx.NORMAL)
 
     def __initWidget(self):
-        # self.__initLogo()
+        self.__initLogo()
 
         self.titleOne = wx.StaticText(self, -1, u"外差多普勒信号分析")
         self.titleTwo = wx.StaticText(self, -1, u"毕业设计")
@@ -41,7 +41,7 @@ class Intro(wx.Panel):
         self.hBox3 = wx.BoxSizer(wx.HORIZONTAL)
 
     def __initLayout(self):
-        # self.hBox0.Add(self.logo, 0, flag=wx.ALIGN_LEFT)
+        self.hBox0.Add(self.logo, 0, flag=wx.ALIGN_LEFT)
         self.hBox1.Add(self.titleOne, 0, flag=wx.ALIGN_CENTER)
         self.hBox2.Add(self.titleTwo, 0, flag=wx.ALIGN_LEFT)
         self.hBox3.Add(self.titleThree, 0, flag=wx.ALIGN_CENTER)

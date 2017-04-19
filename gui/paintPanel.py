@@ -13,6 +13,10 @@ matplotlib.use('WXAgg')
 class CanvasPanel(wx.Panel):
     def __init__(self, parent, filePath):
         wx.Panel.__init__(self, parent, -1)
+        self.paintGragh(filePath)
+        self.initLayout()
+
+    def paintGragh(self, filePath):
         ins = PaintData(filePath)
         timeZoneData = ins.getTdata()
         hzZoneData = ins.getHdata()
@@ -29,12 +33,13 @@ class CanvasPanel(wx.Panel):
 
         self.canvas = FigureCanvas(self, -1, self.figure)
 
+    def initLayout(self):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.EXPAND)
         self.SetSizer(self.sizer)
         self.Fit()
 
-        self.add_toolbar()  # comment this out for no toolbar
+        self.add_toolbar() 
 
     def add_toolbar(self):
         self.toolbar = NavigationToolbar2Wx(self.canvas)
