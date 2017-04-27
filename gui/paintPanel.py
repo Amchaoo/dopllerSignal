@@ -28,8 +28,14 @@ class CanvasPanel(wx.Panel):
         self.axesT.set_ylabel(u'电压/v')
         self.axesH = self.figure.add_subplot(212)
         self.axesH.plot(hzZoneData['x'], hzZoneData['y'])
-        self.axesH.set_xlabel(u'频率/s')
+        self.axesH.set_xlabel(u'频率/hz')
         self.axesH.set_ylabel(u'电压/v')
+
+        for index in hzZoneData['speaks']:
+            self.axesH.annotate(hzZoneData['x'][index],
+                xy=(hzZoneData['x'][index], hzZoneData['y'][index]),
+                xytext=(hzZoneData['x'][index], hzZoneData['y'][index]),
+                arrowprops=dict(facecolor='green', shrink=0.01))
 
         self.canvas = FigureCanvas(self, -1, self.figure)
 
@@ -39,7 +45,7 @@ class CanvasPanel(wx.Panel):
         self.SetSizer(self.sizer)
         self.Fit()
 
-        self.add_toolbar() 
+        self.add_toolbar()
 
     def add_toolbar(self):
         self.toolbar = NavigationToolbar2Wx(self.canvas)
@@ -49,7 +55,6 @@ class CanvasPanel(wx.Panel):
         self.sizer.Add(self.toolbar, 0, wx.LEFT | wx.EXPAND)
         # update the axes menu on the toolbar
         self.toolbar.update()
-
 
 # alternatively you could use
 # class App(wx.App):

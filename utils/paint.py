@@ -1,6 +1,7 @@
 """parse data"""
 from parseData import ParseData
 import numpy as np
+import string
 
 
 class PaintData(object):
@@ -13,13 +14,17 @@ class PaintData(object):
 
     def getHdata(self):
         hData = {}
-        hData['x'] = self.__timeZoneData['x']
+        interval = self.getHInterval(self.__timeZoneData['x'])
+        hData['x'] = [interval * i for i in range(len(self.__timeZoneData['x']))]
         hData['y'] = np.fft.fft(np.array(self.__timeZoneData['y']))
-        self.findSpeaks(hData['y'])
+        hData['speaks'] = self.findSpeaks(hData['y'])
         return hData
 
+    def getHInterval(self, timeZoneData):
+        return round(1 / string.atof(timeZoneData[-1]), 2)
+
     def findSpeaks(self, listData):
-        posListData = [ abs(i) for i in listData ]
+        posListData = [abs(i) for i in listData]
         maxValue = max(posListData)
         speakIndexList = []
         resList = []
