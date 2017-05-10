@@ -2,7 +2,10 @@
 from parseData import ParseData
 import numpy as np
 import string
+from scipy import signal as sg
 from scipy import fftpack as fp
+from utils.xcorr import CORRELATION
+import matplotlib.pyplot as plt
 
 
 class PaintData(object):
@@ -12,6 +15,18 @@ class PaintData(object):
         self.__hZoneData = self.calculateFFT(self.__timeZoneData)
         self.__xcorrTimeData = self.calXcorrTData(self.__timeZoneData)
         self.__xcorrHZoneData = self.calculateFFT(self.__xcorrTimeData)
+        self.__HZoneDataWithWindow = self.calFFTWithWidow(self.__timeZoneData)
+        self.__xcorrHZoneDataWithWindow = self.calFFTWithWidow(self.__xcorrTimeData)
+
+        """
+        test start
+        """
+        # f = open('a.html', 'wb')
+        # f.writelines(str(self.__timeZoneData['y']))
+        # self.paintH(data.get_hz_zone_data())
+        """
+        test end
+        """
 
     def calculateFFT(self, timeZoneData):
         hData = {
@@ -19,11 +34,27 @@ class PaintData(object):
             'y': [],
             'speaks': []
         }
+        size = len(timeZoneData['y'])
+        hData['x'] = fp.fftfreq(size, timeZoneData['x'][-1]/size)[0:size/2]
+        hData['x'] = [round(i, 2) for i in hData['x']]
+        hData['y'] = abs(fp.fft(timeZoneData['y']))[0:size/2]
+        hData['speaks'] = self.findSpeaks(hData['y'])
 
-        interval = self.getHInterval(timeZoneData['x'])
-        hData['x'] = [interval * i for i in range(len(timeZoneData['x']))]
-        hData['y'] = fp.fft(np.array(timeZoneData['y']))
-        hData['y'] = [abs(i) for i in hData['y']]
+        return hData
+
+    def calFFTWithWidow(self, timeZoneData):
+        hData = {
+            'x': [],
+            'y': [],
+            'speaks': []
+        }
+        fs = round(1 / string.atof(timeZoneData['x'][-1]), 2) * len(timeZoneData['x'])
+        print fs
+
+        hData['x'], hData['y'] = sg.welch(
+            timeZoneData['y'],
+            fs=fs,
+            window=sg.get_window('hamming', len(timeZoneData['x'])))
         hData['speaks'] = self.findSpeaks(hData['y'])
 
         return hData
@@ -33,13 +64,10 @@ class PaintData(object):
             'x': xcorrTimeZoneData['x'],
             'y': []
         }
-        xcorrTData['y'] = xcorr(np.array(
-            xcorrTimeZoneData['y']),
-            np.array(xcorrTimeZoneData['y']), 'unbiased')
+        xcorrTData['y'] = CORRELATION(xcorrTimeZoneData['y'])
+        xcorrTData['y'] = CORRELATION(xcorrTData['y'])
+        xcorrTData['y'] = CORRELATION(xcorrTData['y'])
         return xcorrTData
-
-    def getHInterval(self, timeZoneData):
-        return round(1 / string.atof(timeZoneData[-1]), 2)
 
     def findSpeaks(self, listData):
         posListData = [abs(i) for i in listData]
@@ -52,7 +80,7 @@ class PaintData(object):
                 speakIndexList.append(i)
 
         for i in speakIndexList:
-            if posListData[i] * 1.0 / maxValue > 0.2:
+            if posListData[i] * 1.0 / maxValue > 0.08:
                 resList.append(i)
 
         return resList
@@ -69,18 +97,21 @@ class PaintData(object):
     def getXcorrHZoneData(self):
         return self.__xcorrHZoneData
 
+    def getHZoneDataWithWindow(self):
+        return self.__HZoneDataWithWindow
 
-def xcorr(x, y, scale='none'):
-    size = x.size
+    def getXcorrHZoneDataWithWindow(self):
+        return self.__xcorrHZoneDataWithWindow
 
-    corr = np.correlate(x, y, mode='full')  # scale = 'none'
-    lags = np.arange(-(x.size - 1), x.size)
-
-    if scale == 'biased':
-        corr = corr / x.size
-    elif scale == 'unbiased':
-        corr /= (x.size - abs(lags))
-    elif scale == 'coeff':
-        corr /= np.sqrt(np.dot(x, x) * np.dot(y, y))
-    return corr[size - 1:corr.size]
-   # hData['x'], hData['y'] = sg.welch(self.__timeZoneData['y'], fs = 1024, window=sg.get_window('hamming',256))
+    # def paintH(self, data):
+    #     plt.figure()
+    #     plt.subplot(111)
+    #     plt.plot(data['x'], abs(np.array(data['y'])))
+    #     for index in self.findSpeaks(data['y']):
+    #         plt.annotate(
+    #             data['x'][index],
+    #             xy=(data['x'][index], data['y'][index]),
+    #             xytext=(1, 30),
+    #             textcoords='offset points',
+    #             arrowprops=dict(arrowstyle='->', connectionstyle='arc3, rad=.2'))
+    #     plt.show()

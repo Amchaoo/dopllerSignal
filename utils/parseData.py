@@ -1,5 +1,6 @@
 """this moudle read csv file"""
 import csv
+import string
 
 
 class ParseData(object):
@@ -25,7 +26,7 @@ class ParseData(object):
 
             if flag:
                 if row[0] != 'OA':
-                    result['x'].append(row[0])
+                    result['x'].append(string.atof(row[0]))
                     result['y'].append(float(row[1]))
 
             if row == start_flag:
